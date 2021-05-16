@@ -22,6 +22,15 @@ router.post("/user",async (req,res)=>{
     // });
 });
 
+// router.post("/user/login", async (req,res)=>{
+// try{
+//     const user = await User.findByCredential(req.body.email,req.body.password);
+// }catch{
+
+}
+
+})
+
 router.get("/user",async (req,res)=>{
 
 try{
@@ -77,10 +86,16 @@ router.patch("/user/:id", async (req,res)=>{
         res.status(400).send("error: Invalid Update");
     }
     try{
-      let user = await User.findByIdAndUpdate(_id,req.body,{new : true, runValidators: true});
+      // let user = await User.findByIdAndUpdate(_id,req.body,{new : true, runValidators: true});
+     
+      let user = await User.findById(_id);
+      updates.forEach((update) => {
+         user[update] = req.body[update]
+      });
       if(!user){
         res.status(404).send();
       }else{
+        await user.save();
         res.status(200).send(user);
       }
       
@@ -88,6 +103,7 @@ router.patch("/user/:id", async (req,res)=>{
       res.status(500).send(err);
     }
 });
+
 
 router.delete("/user/:id", async (req,res)=>{
     const _id = req.params.id;
