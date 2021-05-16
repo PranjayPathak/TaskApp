@@ -1,19 +1,19 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require('bcryptjs');
-
+const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
     name:{
         type:String,
     
-        requuired:true,
+        required:true,
         trim:true,
     },
     email:{
         type:String,
     
-        requuired:true,
+        required:true,
         unique:true,
         lowercase:true,
         trim:true,
@@ -41,9 +41,16 @@ const userSchema = new mongoose.Schema({
                 throw new Error("age is invalid")
             }
         }
-    }
+    },
+    tokens:[{
+        token:{
+            type:  String,
+            required: true
+        }
+    }]
 });
 
+//middleware function to encryption password
 userSchema.statics.findByCredential =  async(email,password) => {
     const user = await User_model.findOne({email})
 
@@ -58,7 +65,17 @@ userSchema.statics.findByCredential =  async(email,password) => {
     }
 
     return user;
-} 
+}
+
+// method on instances to generate token
+userSchema.methods.generateAuthToken= async function(){
+ const user = this;
+ const token = jwt.sign({_id : user.id.toString() },"sampletext")
+  
+ user.tokens = user.tokens.concat({token});
+ await user.save();
+ return token;
+}
 
 userSchema.pre('save',async function(next){
     let user = this;

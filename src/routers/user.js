@@ -6,8 +6,9 @@ const router = new express.Router();
 router.post("/user",async (req,res)=>{
     const user = new User(req.body);
     try{
+     const token = await user.generateAuthToken();
      await user.save();
-     res.status(201).send(user);
+     res.status(201).send({user,token});
     }catch(err){
         res.status(400).send(err);
     }
@@ -24,10 +25,11 @@ router.post("/user",async (req,res)=>{
 
 router.post("/user/login", async (req,res)=>{
 try{
-    const user = await User.findByCredential(req.body.email,req.body.password);
-    res.status(200).send();
+    const user = await User.findByCredential(req.body.email,req.body.password); // schema/model middleware
+    const token = await user.generateAuthToken(); // user mehtod
+    res.status(200).send({user,token});
 }catch(err){
-   console.log(err);
+    console.log(err);
     res.status(400).send();
 }
 
