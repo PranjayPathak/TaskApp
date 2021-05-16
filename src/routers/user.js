@@ -22,11 +22,13 @@ router.post("/user",async (req,res)=>{
     // });
 });
 
-// router.post("/user/login", async (req,res)=>{
-// try{
-//     const user = await User.findByCredential(req.body.email,req.body.password);
-// }catch{
-
+router.post("/user/login", async (req,res)=>{
+try{
+    const user = await User.findByCredential(req.body.email,req.body.password);
+    res.status(200).send();
+}catch(err){
+   console.log(err);
+    res.status(400).send();
 }
 
 })
