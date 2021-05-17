@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Task = require("../models/task.js");
 const validator = require("validator");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
@@ -96,6 +97,7 @@ userSchema.methods.toJSON = function(){
     return(userObj);   
 }
    
+// before mongoose save() function
 userSchema.pre('save',async function(next){
     let user = this;
     if(user.isModified('password')){
@@ -103,6 +105,14 @@ userSchema.pre('save',async function(next){
     }
     next();
 })
+
+//before mongoose remove() function
+userSchema.pre('remove', async function(next){
+    const user = this;
+    await Task.deleteMany({owner: user._id});
+    next();
+});
+
 const User_model = mongoose.model("user",userSchema)
 
 

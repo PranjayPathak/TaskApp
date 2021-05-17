@@ -75,7 +75,7 @@ try{
 });
 
 
-// no need
+// no need: depricated
 // router.get("/user/:id", async (req,res)=>{
 //     const _id = req.params.id;
 
