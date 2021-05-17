@@ -28,12 +28,31 @@ router.post("/task",auth, async (req,res)=>{
 });
 
 router.get("/tasks",auth, async (req,res)=>{
+   const match = {};
+   const sortBy = {};
+   if(req.query.completed){
+     match.completed = req.query.completed == "true"
+   }
+
+   if(req.query.sortBy){
+    const parts = req.query.sortBy.split(":");
+    sortBy[parts[0]] = parts[1] === "desc" ? -1 : 1 ;
+  }
     try{
     //  let tasks = await Task.find({owner: req.user._id});
-    await req.user.populate('userTasks').execPopulate() //populting the user with its tasks(userTasks virtual relation)
-    //  res.status(201).send(tasks);
+    
+    await req.user.populate({
+      path: 'userTasks', //property name
+      match: match,
+      options:{
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip),
+        sort:sortBy
+      }
+    }).execPopulate(); //populting the user with its tasks(userTasks virtual relation)
     res.status(201).send(req.user.userTasks);
-    }catch(err){
+   
+  }catch(err){
      res.status(400).send(err);   
     }
     //   Task.find().then((tasks)=>{

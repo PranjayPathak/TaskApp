@@ -2,13 +2,13 @@
   "name": "TaskApp",
   "version": "1.0.0",
   "description": "Simple fullstack Task App",
-  "main": "mongodb.js",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.4",
     "mongoose": "^5.11.18",
+    "multer": "^1.4.2",
     "npm": "^7.5.4",
     "validator": "^13.5.2"
   },
