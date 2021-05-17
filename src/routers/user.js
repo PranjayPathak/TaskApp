@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../models/user.js');
+const auth = require("../middleware/auth.js")
 const router = new express.Router();
 
 
@@ -33,26 +34,44 @@ try{
     res.status(400).send();
 }
 
-})
+});
 
-router.get("/user",async (req,res)=>{
-
+router.post("/user/logout",auth, async (req,res)=>{
 try{
-  let users = await User.find({});
-  res.status(201).send(users);
+  req.user.tokens = req.user.tokens.filter((token)=>{
+    return token.token !== req.token;
+  });
+  await req.user.save();
+  res.status(200).send();
+}catch(err){
+  res.status(500).send(); 
+}
+});
+
+router.post("/user/logout/all",auth, async (req,res)=>{
+  try{
+    req.user.tokens = []
+    await req.user.save();
+    res.status(200).send();
+  }catch(err){
+    res.status(500).send(); 
+  }
+  });
+
+  
+router.get("/user/me", auth,async (req,res)=>{
+
+  // res.send(req.user);
+try{
+  const user = req.user;
+  res.status(200).send(user);
+  // let users = await User.find({});
+  // res.status(201).send(users);
   
 }catch(err){
     res.status(500).send();
     console.log(err);
 }
-    // User.find().then((users)=>{
-//     res.status(201);
-//     res.send((users))
-
-// }).catch((err)=>{
-//     res.status(500)
-//     res.send();
-// })
 });
 
 router.get("/user/:id", async (req,res)=>{
