@@ -50,6 +50,13 @@ const userSchema = new mongoose.Schema({
     }]
 });
 
+//virtual relation
+userSchema.virtual('userTasks',{
+    ref:"task",
+    localField:'_id', // name of field locally 
+    foreignField:'owner' //name of field in task
+})
+
 //middleware function to encryption password
 userSchema.statics.findByCredential =  async(email,password) => {
     const user = await User_model.findOne({email})
