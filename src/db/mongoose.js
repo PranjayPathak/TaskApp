@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 // const database_name = "taskManager";
 
-mongoose.connect("mongodb://127.0.0.1:27017/tast-manger-api",{
+mongoose.connect(process.env.MONGODB_URL,{
     useNewUrlParser:true,
       useUnifiedTopology: true,
         useCreateIndex:true

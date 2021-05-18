@@ -42,7 +42,7 @@ router.get("/tasks",auth, async (req,res)=>{
     //  let tasks = await Task.find({owner: req.user._id});
     
     await req.user.populate({
-      path: 'userTasks', //property name
+      path: 'userTasks', //property name of virtual relatiation
       match: match,
       options:{
         limit: parseInt(req.query.limit),
@@ -54,12 +54,7 @@ router.get("/tasks",auth, async (req,res)=>{
    
   }catch(err){
      res.status(400).send(err);   
-    }
-    //   Task.find().then((tasks)=>{
-//     res.status(201).send(tasks);
-//   }).catch((err)=>{
-//       res.status(400).send(err);
-//   });  
+    }  
 });
 
 

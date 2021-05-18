@@ -6,8 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
     name:{
-        type:String,
-    
+        type:String,    
         required:true,
         trim:true,
     },
@@ -26,7 +25,6 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-    
         required:true,
         trim:true,
         minlength:7,
@@ -38,7 +36,6 @@ const userSchema = new mongoose.Schema({
     },
     age:{
         type:Number,
-    
         validate(value){
             if(value <= 0){
                 throw new Error("age is invalid")
@@ -48,7 +45,6 @@ const userSchema = new mongoose.Schema({
     tokens:[{
         token:{
             type:  String,
-    
             required: true
         }
     }],
@@ -86,12 +82,12 @@ userSchema.statics.findByCredential =  async(email,password) => {
 
 // method on instances to generate token
 userSchema.methods.generateAuthToken= async function(){
- const user = this;
- const token = jwt.sign({_id : user.id.toString() },"sampletext")
+    const user = this;
+    const token = jwt.sign({_id : user.id.toString() },process.env.JWT_SEC)
   
- user.tokens = user.tokens.concat({token});
- await user.save();
- return token;
+    user.tokens = user.tokens.concat({token});
+    await user.save();
+    return token;
 }
 
 //removing private info from user object

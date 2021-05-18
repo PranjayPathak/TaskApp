@@ -15,15 +15,6 @@ router.post("/user",async (req,res)=>{
     }catch(err){
         res.status(400).send(err);
     }
-    // user.save().then(()=>{
-    //     console.log("user saved");
-    //     res.status(201);
-    //     res.send(user);
-    // }).catch((err)=>{
-    //     console.log("error in user cretion");
-    //     res.status(400)
-    //     res.send(err);
-    // });
 });
 
 router.post("/user/login", async (req,res)=>{
@@ -63,13 +54,9 @@ router.post("/user/logout/all",auth, async (req,res)=>{
   
 router.get("/user/me", auth,async (req,res)=>{
 
-  // res.send(req.user);
 try{
   const user = req.user;
   res.status(200).send(user);
-  // let users = await User.find({});
-  // res.status(201).send(users);
-  
 }catch(err){
     res.status(500).send();
     console.log(err);
@@ -190,10 +177,9 @@ router.get("/user/:id/avatar",async (req,res)=>{
     if(!user || !user.avatar){
       throw new Error();
     }
-
     res.set("Content-Type","image/png");
     res.send(user.avatar);
-
+    
   }catch(err){
     console.log(err);
     res.status(404).send();
