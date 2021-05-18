@@ -1,6 +1,8 @@
 const express = require('express');
 const User = require('../models/user.js');
 const auth = require("../middleware/auth.js")
+const multer = require("multer");
+const sharp = require("sharp");
 const router = new express.Router();
 
 
@@ -141,8 +143,62 @@ router.delete("/user/me", auth, async (req,res)=>{
       // }
       
     }catch(err){
-      res.status(500).send(err);
+      res.status(404).send(err);
     }
 });
+
+const upload = multer({
+  // dest: 'avatar', ///depricated: now it will pass the file in the callback instead of the avatar folder
+  limits:{
+    fileSize: 1000000 //1mb
+  },
+  fileFilter(req, file, callBack){
+     //regular expression to check file format
+    if(!file.originalname.match(/\.(png|jpeg|jpg)$/)){ 
+        return callBack(new Error("Please upload an image"))
+    }
+    callBack(undefined, true)
+  }
+});
+
+
+router.post("/user/me/avatar", auth , upload.single("avatar") , async (req,res)=>{
+  
+  const buffer = await sharp(req.file.buffer).resize({width:250, height:250}).png().toBuffer();
+  // req.user.avatar = req.file.buffer; //depricated
+  await req.user.save();
+  res.status(200).send();
+
+},(err,req,res,next)=>{ //callback forr error handling
+   res.status(400).send({ error : err.message});
+});
+
+router.delete("/user/me/avatar", auth , async (req,res)=>{
+  try{
+  req.user.avatar = undefined;
+  await req.user.save();
+  res.status(200).send();
+  }catch(err){
+    res.status(404).send();
+  }
+});
+
+router.get("/user/:id/avatar",async (req,res)=>{
+  try{
+    const user = await User.findById(req.params.id);
+   
+    if(!user || !user.avatar){
+      throw new Error();
+    }
+
+    res.set("Content-Type","image/png");
+    res.send(user.avatar);
+
+  }catch(err){
+    console.log(err);
+    res.status(404).send();
+  }
+
+})
 
 module.exports = router;

@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
+    
         required:true,
         trim:true,
         minlength:7,
@@ -37,6 +38,7 @@ const userSchema = new mongoose.Schema({
     },
     age:{
         type:Number,
+    
         validate(value){
             if(value <= 0){
                 throw new Error("age is invalid")
@@ -46,9 +48,13 @@ const userSchema = new mongoose.Schema({
     tokens:[{
         token:{
             type:  String,
+    
             required: true
         }
-    }]
+    }],
+    avatar:{
+        type: Buffer
+    }
 }
 ,{
   timestamps: true
@@ -96,7 +102,7 @@ userSchema.methods.toJSON = function(){
     
     delete userObj.password;
     delete userObj.tokens;
-
+    delete userObj.avatar;
     return(userObj);   
 }
    
