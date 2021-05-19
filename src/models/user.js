@@ -63,7 +63,7 @@ userSchema.virtual('userTasks',{
     foreignField:'owner' //name of field in task
 })
 
-//middleware function to encryption password
+
 userSchema.statics.findByCredential =  async(email,password) => {
     const user = await User_model.findOne({email})
 
@@ -80,7 +80,7 @@ userSchema.statics.findByCredential =  async(email,password) => {
     return user;
 }
 
-// method on instances to generate token
+// method on instances to generate token using jwt
 userSchema.methods.generateAuthToken= async function(){
     const user = this;
     const token = jwt.sign({_id : user.id.toString() },process.env.JWT_SEC)
@@ -101,7 +101,8 @@ userSchema.methods.toJSON = function(){
     delete userObj.avatar;
     return(userObj);   
 }
-   
+
+//middleware function to encryption password
 // before mongoose save() function
 userSchema.pre('save',async function(next){
     let user = this;

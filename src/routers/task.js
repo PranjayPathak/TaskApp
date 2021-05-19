@@ -16,15 +16,6 @@ router.post("/task",auth, async (req,res)=>{
     }catch(err){
      res.status(400).send(err);
     }
-    // task.save().then(()=>{
-    //     console.log("task saved");
-    //     res.status(201);
-    //     res.send(task);
-    // }).catch((err)=>{
-    //     console.log("error in user cretion");
-    //     res.status(400);
-    //     res.send(err);
-    // });
 });
 
 router.get("/tasks",auth, async (req,res)=>{
@@ -40,7 +31,6 @@ router.get("/tasks",auth, async (req,res)=>{
   }
     try{
     //  let tasks = await Task.find({owner: req.user._id});
-    
     await req.user.populate({
       path: 'userTasks', //property name of virtual relatiation
       match: match,
@@ -72,15 +62,6 @@ router.get("/task/:id",auth,async (req,res)=>{
     }catch(err){
       res.status(500).send();  
     }
-// Task.findById(_id).then((task)=>{
-//  if(!task){
-//      throw new Error("task not found");
-//  }else{
-//     res.status(201).send(task);
-//  }
-// }).catch((err)=>{
-//     res.status(400).send(err);
-// });  
   });
 
 

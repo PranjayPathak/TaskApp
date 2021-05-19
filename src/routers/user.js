@@ -5,7 +5,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 const router = new express.Router();
 
-
+//Signup
 router.post("/user",async (req,res)=>{
     const user = new User(req.body);
     try{
@@ -17,6 +17,7 @@ router.post("/user",async (req,res)=>{
     }
 });
 
+//Login
 router.post("/user/login", async (req,res)=>{
 try{
     const user = await User.findByCredential(req.body.email,req.body.password); // schema/model middleware
@@ -50,15 +51,13 @@ router.post("/user/logout/all",auth, async (req,res)=>{
   }
   });
 
-  
+ // user profile 
 router.get("/user/me", auth,async (req,res)=>{
-
 try{
   const user = req.user;
   res.status(200).send(user);
 }catch(err){
     res.status(500).send();
-    console.log(err);
 }
 });
 
@@ -115,10 +114,6 @@ router.patch("/user/me", auth, async (req,res)=>{
 router.delete("/user/me", auth, async (req,res)=>{
     const _id = req.user._id;
     try{
-      // let user = await User.findByIdAndDelete(_id);
-      // if(!user){
-        // res.status(404).send();
-      // }
         await req.user.remove(); //mongoose remove function
         res.status(200).send(req. user);
       
