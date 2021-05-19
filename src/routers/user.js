@@ -20,10 +20,9 @@ router.post("/user",async (req,res)=>{
 router.post("/user/login", async (req,res)=>{
 try{
     const user = await User.findByCredential(req.body.email,req.body.password); // schema/model middleware
-    const token = await user.generateAuthToken(); // user mehtod
+    const token = await user.generateAuthToken(); // user method
     res.status(200).send({user,token});
 }catch(err){
-    console.log(err);
     res.status(400).send();
 }
 
@@ -105,13 +104,8 @@ router.patch("/user/me", auth, async (req,res)=>{
       updates.forEach((update) => {
          user[update] = req.body[update]
       });
-      // if(!user){
-        // res.status(404).send();
-      // }else{
         await user.save();
-        res.status(200).send(user);
-      // }
-      
+        res.status(200).send(user);  
     }catch(err){
       res.status(500).send(err);
     }
@@ -124,10 +118,9 @@ router.delete("/user/me", auth, async (req,res)=>{
       // let user = await User.findByIdAndDelete(_id);
       // if(!user){
         // res.status(404).send();
-      // }else{
+      // }
         await req.user.remove(); //mongoose remove function
         res.status(200).send(req. user);
-      // }
       
     }catch(err){
       res.status(404).send(err);
