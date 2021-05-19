@@ -1,11 +1,12 @@
 const request = require("supertest");
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
 const app = require("../src/app.js");
 const User = require("../src/models/user");
+const Task = require("../src/models/task");
+
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const userOneId = new mongoose.Types.ObjectId;
-
 const userOne = {
     _id: userOneId,
     name: "one",
@@ -16,15 +17,51 @@ const userOne = {
     }]
 }
 
+const userTwoId = new mongoose.Types.ObjectId;
+const userTwo = {
+    _id: userTwoId,
+    name: "two",
+    email:"two@gmal.com",
+    password:"samplepasswordtwo",
+    tokens:[{
+       token: jwt.sign({_id : userTwoId },process.env.JWT_SEC)
+    }]
+}
+
+const taskOne = {
+    _id : new mongoose.Types.ObjectId,
+    description: "fist task to complete",
+    completed: false,
+    owner: userOneId
+}
+
+const taskTwo = {
+    _id : new mongoose.Types.ObjectId,
+    description: "Second task to complete",
+    completed: true,
+    owner: userOneId
+}
+
+const taskThree = {
+    _id : new mongoose.Types.ObjectId,
+    description: "Second task to complete",
+    completed: true,
+    owner: userTwoId
+}
+
 //provides same environment ot every test
 beforeEach(async ()=>{
     await User.deleteMany();
+    await Task.deleteMany();
     await new User(userOne).save();
-});
+    await new User(userTwo).save();
+    await new Task(taskOne).save();
+    await new Task(taskTwo).save();
+})
 
-afterEach(()=>{
+// afterEach(()=>{
     
-});
+// });
 
 test("signup new user",async () =>{
     const res = await request(app).post("/user").send({
@@ -113,6 +150,39 @@ test("should not update unauthorized user data",async () =>{
                           name: "newprj" 
                       }).expect(401);
 });
-
-
 //TODO: Tests for user Profile
+
+
+
+// TASKS
+test("create task for user",async () =>{
+    const res = await request(app).post("/task")
+                                  .set("Authorization",`Bearer ${userOne.tokens[0].token}`)
+                                  .send({
+                                      description:"run the test"
+                                  }).expect(201);
+
+    const task  = await Task.findById(res.body._id);
+    expect(task).not.toBeNull();
+    expect(task.completed).toBe(false);
+});
+
+test("get all tasks",async () => {
+    const res = await request(app).get("/tasks")
+                                  .set("Authorization",`Bearer ${userOne.tokens[0].token}`)
+                                  .send()
+                                  .expect(201);
+
+    
+    expect(res.body.length).toEqual(2);
+});
+
+
+test("second user cannot delete task of userOne",async () => {
+    const res = await request(app).delete(`/tasks/${taskOne._id}`)
+                                  .set("Authorization",`Bearer ${userTwo.tokens[0].token}`)
+                                  .send()
+                                  .expect(404);
+    const task = await Task.findById(taskOne._id);
+    expect(task).not.toBeNull();                              
+});
