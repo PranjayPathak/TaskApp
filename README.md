@@ -7,6 +7,7 @@ Task manager application built using **NODE JS** and **MongoDB**. It follows a *
 - Authentication and Security
 - Sorting, Pagination, and Filtering
 - Avatar upload
+- APIs Tested using JEST Framework
 
 ## API Endpoints
 
